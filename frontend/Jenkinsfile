@@ -12,10 +12,10 @@ pipeline {
         AWS_CREDENTIALS = 'aws-ecr-credentials'
         ECR = 'ecr'
 
-        DB_IMAGE_DEV = 'react-java-mysql-frontend-dev'
-        DB_IMAGE_QA = 'react-java-mysql-frontend-qa'
-        DB_IMAGE_UAT = 'react-java-mysql-frontend-uat'
-        DB_IMAGE_PROD = 'react-java-mysql-frontend-prod'
+        FRONTEND_IMAGE_DEV = 'react-java-mysql-frontend-dev'
+        FRONTEND_IMAGE_QA = 'react-java-mysql-frontend-qa'
+        FRONTEND_IMAGE_UAT = 'react-java-mysql-frontend-uat'
+        FRONTEND_IMAGE_PROD = 'react-java-mysql-frontend-prod'
 
         BUILD_CONTEXT = './frontend'
 
@@ -59,7 +59,7 @@ pipeline {
                 script {
 
                     buildAndPush(
-                        env.DB_IMAGE_DEV,
+                        env.FRONTEND_IMAGE_DEV,
                         env.BUILD_CONTEXT
                     )
                 }
@@ -80,7 +80,7 @@ pipeline {
         //         script {
 
         //             deployToECS(
-        //                 'backend/task-definition.json',
+        //                 'frontend/task-definition.json',
         //                 env.ECS_TASK_FAMILY,
         //                 env.ECS_SERVICE_DEV
         //             )
@@ -101,8 +101,8 @@ pipeline {
                 script {
 
                     promoteImage(
-                        env.DB_IMAGE_DEV,
-                        env.DB_IMAGE_QA
+                        env.FRONTEND_IMAGE_DEV,
+                        env.FRONTEND_IMAGE_QA
                     )
                 }
             }
@@ -122,7 +122,7 @@ pipeline {
         //         script {
 
         //             deployToECS(
-        //                 'backend/task-definition.json',
+        //                 'frontend/task-definition.json',
         //                 env.ECS_TASK_FAMILY,
         //                 env.ECS_SERVICE_QA
         //             )
@@ -143,8 +143,8 @@ pipeline {
                 script {
 
                     promoteImage(
-                        env.DB_IMAGE_QA,
-                        env.DB_IMAGE_UAT
+                        env.FRONTEND_IMAGE_QA,
+                        env.FRONTEND_IMAGE_UAT
                     )
                 }
             }
@@ -164,7 +164,7 @@ pipeline {
         //         script {
 
         //             deployToECS(
-        //                 'backend/task-definition.json',
+        //                 'frontend/task-definition.json',
         //                 env.ECS_TASK_FAMILY,
         //                 env.ECS_SERVICE_UAT
         //             )
@@ -202,8 +202,8 @@ pipeline {
                 script {
 
                     promoteImage(
-                        env.DB_IMAGE_UAT,
-                        env.DB_IMAGE_PROD
+                        env.FRONTEND_IMAGE_UAT,
+                        env.FRONTEND_IMAGE_PROD
                     )
                 }
             }
@@ -223,7 +223,7 @@ pipeline {
         //         script {
 
         //             deployToECS(
-        //                 'backend/task-definition.json',
+        //                 'frontend/task-definition.json',
         //                 env.ECS_TASK_FAMILY,
         //                 env.ECS_SERVICE_PROD
         //             )
@@ -307,13 +307,11 @@ def deployToECS(String taskDefinitionFile, String taskFamily, String ecsService)
         sh """
             sed -i 's/\\\${ENV}/${params.Environment}/g' ${taskDefinitionFile}
             sed -i 's/\\\${COMMIT_ID}/${env.GIT_COMMIT}/g' ${taskDefinitionFile}
-            sed -i 's/\\\${BACKEND_HOST}/app3-backend-${params.Environment}.app3.local/g' ${taskDefinitionFile}
         """
     }else{
         sh """
             sed -i 's/\\\${ENV}/${params.Environment}/g' ${taskDefinitionFile}
             sed -i 's/\\\${COMMIT_ID}/${params.IMAGE_TAG}/g' ${taskDefinitionFile}
-            sed -i 's/\\\${BACKEND_HOST}/app3-backend-${params.Environment}.app3.local/g' ${taskDefinitionFile}
         """
     }
 
