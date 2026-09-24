@@ -307,11 +307,13 @@ def deployToECS(String taskDefinitionFile, String taskFamily, String ecsService)
         sh """
             sed -i 's/\\\${ENV}/${params.Environment}/g' ${taskDefinitionFile}
             sed -i 's/\\\${COMMIT_ID}/${env.GIT_COMMIT}/g' ${taskDefinitionFile}
+            sed -i 's/\\\${BACKEND_HOST}/app3-backend-${params.Environment}.app3.local/g' ${taskDefinitionFile}
         """
     }else{
         sh """
             sed -i 's/\\\${ENV}/${params.Environment}/g' ${taskDefinitionFile}
             sed -i 's/\\\${COMMIT_ID}/${params.IMAGE_TAG}/g' ${taskDefinitionFile}
+            sed -i 's/\\\${BACKEND_HOST}/app3-backend-${params.Environment}.app3.local/g' ${taskDefinitionFile}
         """
     }
 
